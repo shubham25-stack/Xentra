@@ -1,10 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
 import connectDb from "./config/db.js";
 import authRouter from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
-
-dotenv.config();
+import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +12,12 @@ const PORT = process.env.PORT || 3000;
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 // Routes
 app.use("/api/auth", authRouter);
@@ -25,6 +31,8 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error("❌ Failed to connect to MongoDB:", error);
+    console.error("❌ MongoDB connection error details:", error.message); // Log the error message
+    console.error("❌ MongoDB connection error stack:", error.stack);   // Log the stack trace
     process.exit(1);
   }
 };
