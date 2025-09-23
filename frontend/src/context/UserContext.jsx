@@ -7,6 +7,9 @@ function UserContextProvider({ children }) {
   const serverUrl = "http://localhost:8000";
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [frontendImage, setFrontendImage] = useState(null);
+  const [backendImage, setBackendImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleCurrentUser = async () => {
     try {
