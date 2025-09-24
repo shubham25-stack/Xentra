@@ -5,11 +5,14 @@ export const UserDataContext = createContext();
 
 function UserContextProvider({ children }) {
   const serverUrl = "http://localhost:8000";
+
+  // 🔹 Data from backend
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [frontendImage, setFrontendImage] = useState(null);
-  const [backendImage, setBackendImage] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
+
+  // 🔹 Data from customize steps
+  const [assistantName, setAssistantName] = useState("");
+  const [assistantImage, setAssistantImage] = useState(null);
 
   const handleCurrentUser = async () => {
     try {
@@ -31,7 +34,17 @@ function UserContextProvider({ children }) {
 
   return (
     <UserDataContext.Provider
-      value={{ serverUrl, userData, setUserData, loading, handleCurrentUser }}
+      value={{
+        serverUrl,
+        userData,
+        setUserData,
+        loading,
+        handleCurrentUser,
+        assistantName,
+        setAssistantName,
+        assistantImage,
+        setAssistantImage,
+      }}
     >
       {children}
     </UserDataContext.Provider>

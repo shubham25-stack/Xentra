@@ -1,18 +1,20 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import Home from "./pages/Home";
 import Customize from "./pages/Customize";
-import Customize2 from "./pages/Customize2";
+import { useContext } from "react";
+import { UserDataContext } from "./context/UserContext";
 
 function App() {
+  const { user } = useContext(UserDataContext);
+
   return (
     <Routes>
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/" element={<Home />} />
-      <Route path="/customize" element={<Customize />} />
-      <Route path="/customize2" element={<Customize2 />} />
+      <Route path="/" element={user ? <Navigate to="/customize" /> : <Navigate to="/signup" />} />
+      <Route path="/signup" element={user ? <Navigate to="/customize" /> : <SignUp />} />
+      <Route path="/signin" element={user ? <Navigate to="/customize" /> : <SignIn />} />
+      <Route path="/customize" element={user ? <Customize /> : <Navigate to="/signup" />} />
+      <Route path="*" element={<Navigate to="/signup" />} />
     </Routes>
   );
 }

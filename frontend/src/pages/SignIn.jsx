@@ -28,11 +28,8 @@ function SignIn() {
 
     try {
       // Login request
-      await axios.post(
-        `${serverUrl}/api/auth/login`,
-        { email, password },
-        { withCredentials: true }
-      );
+      await axios.post(`${serverUrl}/api/auth/register`, { name, email, password }, { withCredentials: true });
+
 
       // Update user context after login
       await handleCurrentUser();
