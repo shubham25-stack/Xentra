@@ -1,20 +1,27 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { UserDataContext } from "../context/UserContext.jsx";
 import { useNavigate } from "react-router-dom";
 
 function Customize2() {
   const [name, setName] = useState("");
-  const { setAssistantName } = useContext(UserDataContext);
+  const { assistantImage, setAssistantName } = useContext(UserDataContext);
   const navigate = useNavigate();
 
+  // Redirect back if user hasn't selected image
+  useEffect(() => {
+    if (!assistantImage) {
+      navigate("/customize");
+    }
+  }, [assistantImage, navigate]);
+
   const handleNext = () => {
-    if (!name) {
+    if (!name.trim()) {
       alert("Please enter a name");
       return;
     }
 
     setAssistantName(name); // Save in context
-    navigate("/"); // Go to Home
+    navigate("/home"); // Redirect to home/dashboard
   };
 
   return (

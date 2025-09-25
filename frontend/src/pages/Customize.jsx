@@ -26,7 +26,7 @@ function Customize() {
       reader.onloadend = () => {
         const base64data = reader.result;
         setFrontendImage(base64data);
-        setAssistantImage(base64data); // Save to context
+        setAssistantImage(base64data); // Save in context
       };
       reader.readAsDataURL(file);
     }
@@ -38,7 +38,14 @@ function Customize() {
     setAssistantImage(img);
   };
 
-  // List of predefined images
+  const handleNext = () => {
+    if (!frontendImage) {
+      alert("Please select or upload an image before proceeding.");
+      return;
+    }
+    navigate("/customize2");
+  };
+
   const predefinedImages = [image1, image2, image3, image4, image5, image6, image7];
 
   return (
@@ -47,7 +54,6 @@ function Customize() {
         Select your <span className="text-blue-400">Assistant Image</span>
       </h1>
 
-      {/* Image Grid */}
       <div className="flex flex-wrap justify-center gap-5 w-[90%] max-w-[900px] p-5">
         {predefinedImages.map((img, index) => (
           <div
@@ -74,10 +80,9 @@ function Customize() {
         <input type="file" accept="image/*" ref={inputImage} hidden onChange={handleImageChange} />
       </div>
 
-      {/* Next Button */}
       <button
         className="min-w-[150px] mt-5 h-14 bg-white rounded-full text-black font-semibold cursor-pointer"
-        onClick={() => navigate("/customize2")}
+        onClick={handleNext}
       >
         Next
       </button>

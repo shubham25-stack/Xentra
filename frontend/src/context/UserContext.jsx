@@ -1,54 +1,60 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 import axios from "axios";
 
 export const UserDataContext = createContext();
 
-function UserContextProvider({ children }) {
-  const serverUrl = "http://localhost:8000";
+export default function UserContextProvider({ children }) {
+  const serverUrl = "http://localhost:5000";
 
-  // 🔹 Data from backend
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // 🔹 Data from customize steps
-  const [assistantName, setAssistantName] = useState("");
+  const [user, setUserData] = useState(null);
   const [assistantImage, setAssistantImage] = useState(null);
+  const [assistantName, setAssistantName] = useState("");
 
+  // Fetch current user from backend
   const handleCurrentUser = async () => {
     try {
       const res = await axios.get(`${serverUrl}/api/user/current`, {
         withCredentials: true,
       });
-      setUserData(res.data);
-    } catch (error) {
-      console.error("Fetching user failed:", error);
-      setUserData(null);
-    } finally {
-      setLoading(false);
+
+      if (res.data.user) {
+        setUserData(res.data.user);
+        setAssistantImage(res.data.user.assistantImage || null);
+        setAssistantName(res.data.user.assistantName || "");
+        return res.data.user;
+      } else {
+        clearUserData();
+        return null;
+      }
+    } catch (err) {
+      console.error(err);
+      clearUserData();
+      return null;
     }
   };
 
-  useEffect(() => {
-    handleCurrentUser();
-  }, []);
+  // Reset all context data
+  const clearUserData = () => {
+    setUserData(null);
+    setAssistantImage(null);
+    setAssistantName("");
+  };
 
   return (
     <UserDataContext.Provider
       value={{
         serverUrl,
-        userData,
+        user,
         setUserData,
-        loading,
-        handleCurrentUser,
-        assistantName,
-        setAssistantName,
         assistantImage,
         setAssistantImage,
+        assistantName,
+        setAssistantName,
+        handleCurrentUser,
+        clearUserData,
       }}
     >
       {children}
     </UserDataContext.Provider>
   );
 }
-
-export default UserContextProvider;

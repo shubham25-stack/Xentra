@@ -13,7 +13,7 @@ function SignUp() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { serverUrl, handleCurrentUser } = useContext(UserDataContext);
+  const { serverUrl, setUserData } = useContext(UserDataContext);
   const navigate = useNavigate();
 
   const togglePassword = () => setShowPassword(!showPassword);
@@ -29,21 +29,23 @@ function SignUp() {
     setErrorMessage("");
 
     try {
-      // Signup request
-      await axios.post(
+      // ✅ Signup request
+      const res = await axios.post(
         `${serverUrl}/api/auth/signup`,
         { name, email, password },
         { withCredentials: true }
       );
 
-      // Fetch current user after signup (auto-login)
-      await handleCurrentUser();
-
-      // Redirect to dashboard/home page
-      navigate("/");
+      // ✅ Directly update user context from API response
+      if (res.data.user) {
+        setUserData(res.data.user);
+        navigate("/customize"); // navigate after setting user
+      } else {
+        setErrorMessage("Signup succeeded but failed to load user. Try login.");
+      }
     } catch (error) {
       setErrorMessage(
-        error.response?.data?.message || "Signup failed. Try again."
+        error.response?.data?.message || "Signup failed. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -78,7 +80,7 @@ function SignUp() {
         />
 
         <input
-          type="text"
+          type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}

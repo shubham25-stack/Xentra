@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import bg from "../assets/authBg.png";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { UserDataContext } from "../context/UserContext.jsx"; // ✅ fixed import
+import { UserDataContext } from "../context/UserContext.jsx";
 import axios from "axios";
 
 function SignIn() {
@@ -11,8 +11,16 @@ function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    serverUrl,
+    setUserData,
+    setAssistantImage,
+    setAssistantName,
+    clearUserData,
+  } = useContext(UserDataContext);
+
   const navigate = useNavigate();
-  const { serverUrl, handleCurrentUser } = useContext(UserDataContext);
 
   const togglePassword = () => setShowPassword(!showPassword);
 
@@ -27,17 +35,31 @@ function SignIn() {
     setErrorMessage("");
 
     try {
-      // Login request
-      await axios.post(`${serverUrl}/api/auth/register`, { name, email, password }, { withCredentials: true });
+      const res = await axios.post(
+        `${serverUrl}/api/auth/login`,
+        { email, password },
+        { withCredentials: true }
+      );
 
+      if (res.data.user) {
+        // Reset old context
+        clearUserData();
 
-      // Update user context after login
-      await handleCurrentUser();
+        setUserData(res.data.user);
 
-      // Redirect to home/dashboard
-      navigate("/");
+        // Check if user has already customized assistant
+        if (!res.data.user.assistantImage || !res.data.user.assistantName) {
+          navigate("/customize"); // New user → Customize page
+        } else {
+          setAssistantImage(res.data.user.assistantImage);
+          setAssistantName(res.data.user.assistantName);
+          navigate("/"); // Existing user → Home
+        }
+      } else {
+        setErrorMessage("Signin succeeded but failed to load user.");
+      }
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Signin failed");
+      setErrorMessage(error.response?.data?.message || "Signin failed. Try again.");
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +68,11 @@ function SignIn() {
   return (
     <div
       className="w-full h-screen flex justify-center items-center"
-      style={{ backgroundImage: `url(${bg})`, backgroundSize: "cover", backgroundPosition: "center" }}
+      style={{
+        backgroundImage: `url(${bg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
       <form
         className="w-[90%] max-w-[500px] h-[600px] bg-[#00000062] backdrop-blur-md flex flex-col items-center justify-center gap-5 p-5"
@@ -75,9 +101,15 @@ function SignIn() {
             className="w-full h-full px-5 bg-transparent text-white outline-none placeholder-gray-300 rounded-full"
           />
           {showPassword ? (
-            <IoIosEyeOff className="absolute right-5 w-6 h-6 text-white cursor-pointer" onClick={togglePassword} />
+            <IoIosEyeOff
+              className="absolute right-5 w-6 h-6 text-white cursor-pointer"
+              onClick={togglePassword}
+            />
           ) : (
-            <IoIosEye className="absolute right-5 w-6 h-6 text-white cursor-pointer" onClick={togglePassword} />
+            <IoIosEye
+              className="absolute right-5 w-6 h-6 text-white cursor-pointer"
+              onClick={togglePassword}
+            />
           )}
         </div>
 
