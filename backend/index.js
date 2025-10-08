@@ -11,7 +11,7 @@ import geminiResponse from "./gemini.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Apply CORS BEFORE routes
+// Apply CORS BEFORE routes
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -22,21 +22,24 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Gemini GET route for quick browser testing
-app.get("/", async (req, res) => {
-  const prompt = req.query.prompt;
-  if (!prompt) {
-    return res.status(400).json({ success: false, message: "Prompt is required" });
-  }
+//  Gemini GET route for quick browser testing
+// app.get("/", async (req, res) => {
+//   const prompt = req.query.prompt;
+//   if (!prompt) {
+//     return res.status(400).json({ success: false, message: "Prompt is required" });
+//   }
 
-  try {
-    const data = await geminiResponse(prompt);
-    res.json({ success: true, text: data.text, raw: data.raw });
-  } catch (err) {
-    console.error("Gemini error:", err.message);
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
+//   try {
+//     const data = await geminiResponse(prompt);
+//     res.json({ success: true, text: data.text, raw: data.raw });
+//   } catch (err) {
+//     console.error("Gemini error:", err.message);
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// });
+
+//gemini response test route
+
 
 // ✅ Auth & User routes
 app.use("/api/auth", authRouter);

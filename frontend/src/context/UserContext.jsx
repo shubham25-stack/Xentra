@@ -33,6 +33,16 @@ export default function UserContextProvider({ children }) {
     }
   };
 
+  // get gemini response
+  const getGeminiResponse = async (command)=>{
+    try{
+      const result = await axios.post(`${serverUrl}/api/user/asktoassistant`,{command},{withCredentials:true})
+      return result.data
+    } catch(error){
+      console.log(error)
+    }
+  }
+
   // Reset all context data
   const clearUserData = () => {
     setUserData(null);
@@ -52,6 +62,7 @@ export default function UserContextProvider({ children }) {
         setAssistantName,
         handleCurrentUser,
         clearUserData,
+        getGeminiResponse,
       }}
     >
       {children}
