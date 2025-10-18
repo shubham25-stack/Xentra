@@ -59,4 +59,4 @@ const startServer = async () => {
 
 startServer();
 
-// check all the api's and fix all the things then speak function call kro and modify kro...
+//make sure that speack function work
